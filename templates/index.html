@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>MVR Exporter</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Enable dark mode via class strategy
+        tailwind.config = {
+            darkMode: 'class'
+        };
+    </script>
+    <script>
+        // Toggle theme with localStorage
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        // Load theme on page load
+        window.onload = function () {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
+            }
+
+            // Inactivity logout
+            let idleTime = 0;
+            function resetIdleTimer() { idleTime = 0; }
+            setInterval(() => {
+                idleTime += 1;
+                if (idleTime >= 5) {
+                    window.location.href = "/logout";
+                }
+            }, 60000);
+            document.onmousemove = resetIdleTimer;
+            document.onkeypress = resetIdleTimer;
+            document.onclick = resetIdleTimer;
+            document.onscroll = resetIdleTimer;
+        };
+    </script>
+</head>
+<body class="bg-white text-gray-900 dark:bg-black dark:text-green-400 font-mono">
+
+    <div class="min-h-screen flex items-center justify-center px-4">
+        <div class="bg-gray-100 dark:bg-gray-900 p-8 rounded-2xl shadow-lg w-full max-w-md border border-green-600 dark:border-green-600 relative">
+
+            <!-- Toggle Theme Lamp Icon -->
+            <div class="absolute top-4 right-4">
+                <button onclick="toggleTheme()" class="bg-white dark:bg-black border border-gray-300 dark:border-green-500 p-2 rounded-full hover:shadow transition">
+                    <!-- SVG Lamp Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-500 dark:text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 2a7 7 0 00-4.95 11.95A3 3 0 009 18h6a3 3 0 001.95-4.05A7 7 0 0012 2z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold dark:text-green-400 text-gray-800">Regular System Health Check Exporter</h1>
+                <form method="POST" action="/logout">
+                    <button class="text-red-500 dark:text-red-400 text-sm hover:underline" type="submit">Logout</button>
+                </form>
+            </div>
+
+            <p class="text-sm text-gray-600 dark:text-green-500 mb-6">Logged in as: <strong>{{ current_user.id }}</strong></p>
+
+            <form method="POST" class="space-y-4">
+                <div>
+                    <label for="rrd_type" class="block text-sm font-medium text-gray-700 dark:text-green-300">Jenis Data</label>
+                    <select name="rrd_type" id="rrd_type"
+                            class="mt-1 block w-full rounded-md border dark:border-green-700 bg-white dark:bg-black text-gray-900 dark:text-green-400 focus:ring-green-500 focus:border-green-500">
+                        <option value="cpu">CPU</option>
+                        <option value="memory">Memory</option>
+                        <option value="storage">Storage (Now)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-green-300">Tanggal Mulai</label>
+                    <input type="date" name="start_date" id="start_date"
+                           class="mt-1 block w-full rounded-md border dark:border-green-700 bg-white dark:bg-black text-gray-900 dark:text-green-400 focus:ring-green-500 focus:border-green-500">
+                </div>
+
+                <div>
+                    <label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-green-300">Tanggal Selesai</label>
+                    <input type="date" name="end_date" id="end_date"
+                           class="mt-1 block w-full rounded-md border dark:border-green-700 bg-white dark:bg-black text-gray-900 dark:text-green-400 focus:ring-green-500 focus:border-green-500">
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit"
+                            class="w-full bg-green-600 dark:bg-green-500 text-white dark:text-black font-bold py-2 px-4 rounded-md hover:bg-green-500 dark:hover:bg-green-400 transition">
+                        Download CSV
+                    </button>
+                </div>
+            </form>
+
+            <p class="mt-6 text-center text-xs text-gray-500 dark:text-green-600">Made by: MVR</p>
+        </div>
+    </div>
+
+</body>
+</html>
